@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Authorization callback — Curro Fragua auto-post</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    max-width: 44rem; margin: 0 auto; padding: 3rem 1.25rem 5rem;
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  h1 { font-size: 1.5rem; }
+  #box {
+    margin: 1.5rem 0; padding: 1rem 1.25rem; border-radius: 8px;
+    background: rgba(127,127,127,.12); border: 1px solid rgba(127,127,127,.3);
+  }
+  #code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.05rem; word-break: break-all; user-select: all;
+  }
+  button {
+    margin-top: 1rem; padding: .5rem 1rem; font-size: 1rem; cursor: pointer;
+    border-radius: 6px; border: 1px solid rgba(127,127,127,.5); background: transparent;
+    color: inherit;
+  }
+  .err { color: #b91c1c; font-weight: 600; }
+  .hint { color: #6b7280; font-size: .92rem; }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+
+<h1>Authorization callback</h1>
+<p class="hint">
+  This page receives the authorization code from TikTok and shows it so the
+  command-line tool can complete the login. Nothing is stored or sent anywhere.
+</p>
+
+<div id="box">
+  <div id="code">Reading the authorization code…</div>
+  <button id="copy" hidden>Copy code</button>
+</div>
+
+<p class="hint">Paste this value into the terminal prompt, then close this tab.</p>
+
+<p class="hint"><a href="./index.html">Curro Fragua auto-post</a></p>
+
+<script>
+  var params = new URLSearchParams(window.location.search);
+  var code = params.get("code");
+  var error = params.get("error") || params.get("error_description");
+  var box = document.getElementById("code");
+  var btn = document.getElementById("copy");
+
+  if (code) {
+    box.textContent = code;
+    btn.hidden = false;
+    btn.addEventListener("click", function () {
+      navigator.clipboard.writeText(code).then(function () {
+        btn.textContent = "Copied";
+        setTimeout(function () { btn.textContent = "Copy code"; }, 1500);
+      });
+    });
+  } else if (error) {
+    box.className = "err";
+    box.textContent = "TikTok returned an error: " + error;
+  } else {
+    box.textContent = "No authorization code in this URL.";
+  }
+</script>
+
+</body>
+</html>
